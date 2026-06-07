@@ -54,36 +54,62 @@
           </div>
           <div class="poodle-container">
             <svg class="poodle-mascot" viewBox="0 0 100 90" width="80" height="72" xmlns="http://www.w3.org/2000/svg">
-              <!-- Body/Chest peeking -->
-              <path d="M 30,80 C 30,65 70,65 70,80" fill="#d4a373" />
+              <!-- Body/Chest (solid, overlapping head) -->
+              <path d="M 28,90 C 28,52 72,52 72,90 Z" fill="#d4a373" />
+              
               <!-- Left Ear (floppy curl) -->
-              <circle cx="28" cy="45" r="14" fill="#c68b59" />
-              <circle cx="24" cy="55" r="10" fill="#c68b59" />
-              <circle cx="32" cy="52" r="10" fill="#c68b59" />
+              <ellipse cx="28" cy="42" rx="10" ry="16" fill="#c68b59" transform="rotate(5, 28, 42)" />
+              <circle cx="23" cy="50" r="7" fill="#c68b59" />
+              <circle cx="30" cy="55" r="7" fill="#c68b59" />
+              
               <!-- Right Ear (floppy curl) -->
-              <circle cx="72" cy="45" r="14" fill="#c68b59" />
-              <circle cx="76" cy="55" r="10" fill="#c68b59" />
-              <circle cx="68" cy="52" r="10" fill="#c68b59" />
-              <!-- Head base -->
-              <circle cx="50" cy="42" r="22" fill="#d4a373" />
-              <!-- Forehead curls -->
-              <circle cx="50" cy="22" r="8" fill="#d4a373" />
-              <circle cx="43" cy="24" r="7" fill="#d4a373" />
-              <circle cx="57" cy="24" r="7" fill="#d4a373" />
+              <ellipse cx="72" cy="42" rx="10" ry="16" fill="#c68b59" transform="rotate(-5, 72, 42)" />
+              <circle cx="77" cy="50" r="7" fill="#c68b59" />
+              <circle cx="70" cy="55" r="7" fill="#c68b59" />
+              
+              <!-- Head Base -->
+              <circle cx="50" cy="38" r="21" fill="#d4a373" />
+              
+              <!-- Cute Collar (Red Ribbon) -->
+              <path d="M 35,53 Q 50,60 65,53" fill="none" stroke="#ff4d6d" stroke-width="4.5" stroke-linecap="round" />
+              <!-- Gold Bell -->
+              <circle cx="50" cy="59" r="4.5" fill="#ffaa6b" stroke="#ffffff" stroke-width="1.2" />
+              <circle cx="50" cy="59" r="3.5" fill="#ffd369" />
+              
+              <!-- Forehead Curls -->
+              <circle cx="50" cy="18" r="8" fill="#d4a373" />
+              <circle cx="43" cy="20" r="7" fill="#d4a373" />
+              <circle cx="57" cy="20" r="7" fill="#d4a373" />
+              
               <!-- Muzzle/Snout -->
-              <ellipse cx="50" cy="48" rx="10" ry="7" fill="#fcf6f0" />
+              <ellipse cx="50" cy="44" rx="10" ry="7" fill="#fcf6f0" />
+              
               <!-- Eyes -->
-              <circle cx="41" cy="38" r="3" fill="#3d3436" />
-              <circle cx="40" cy="37" r="0.8" fill="#ffffff" /> <!-- Eye shine -->
-              <circle cx="59" cy="38" r="3" fill="#3d3436" />
-              <circle cx="58" cy="37" r="0.8" fill="#ffffff" /> <!-- Eye shine -->
+              <circle cx="40" cy="35" r="3" fill="#3d3436" />
+              <circle cx="39" cy="34" r="0.9" fill="#ffffff" /> <!-- Eye shine -->
+              <circle cx="60" cy="35" r="3" fill="#3d3436" />
+              <circle cx="59" cy="34" r="0.9" fill="#ffffff" /> <!-- Eye shine -->
+              
               <!-- Nose -->
-              <ellipse cx="50" cy="45" rx="3.5" ry="2.2" fill="#1e1a1b" />
+              <ellipse cx="50" cy="41" rx="3.5" ry="2.2" fill="#1e1a1b" />
+              
               <!-- Cute mouth (w-shape) -->
-              <path d="M 47,49 Q 48.5,51.5 50,49 Q 51.5,51.5 53,49" fill="none" stroke="#1e1a1b" stroke-width="1.2" stroke-linecap="round" />
+              <path d="M 47,45 Q 48.5,47.5 50,45 Q 51.5,47.5 53,45" fill="none" stroke="#1e1a1b" stroke-width="1.2" stroke-linecap="round" />
+              
               <!-- Cheeks (Blush) -->
-              <circle cx="34" cy="44" r="3" fill="#ffb3c1" opacity="0.6" />
-              <circle cx="66" cy="44" r="3" fill="#ffb3c1" opacity="0.6" />
+              <circle cx="33" cy="41" r="3" fill="#ffb3c1" opacity="0.6" />
+              <circle cx="67" cy="41" r="3" fill="#ffb3c1" opacity="0.6" />
+
+              <!-- Cute front paws peeking at the bottom -->
+              <ellipse cx="36" cy="85" rx="6" ry="5" fill="#c68b59" />
+              <circle cx="33" cy="81" r="2.5" fill="#c68b59" />
+              <circle cx="36" cy="80" r="2.5" fill="#c68b59" />
+              <circle cx="39" cy="81" r="2.5" fill="#c68b59" />
+
+              <ellipse cx="64" cy="85" rx="6" ry="5" fill="#c68b59" />
+              <circle cx="61" cy="81" r="2.5" fill="#c68b59" />
+              <circle cx="64" cy="80" r="2.5" fill="#c68b59" />
+              <circle cx="67" cy="81" r="2.5" fill="#c68b59" />
             </svg>
           </div>
         </div>
