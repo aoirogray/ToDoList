@@ -33,6 +33,7 @@ const elements = {
   // ナビゲーション & タブ
   navItems: document.querySelectorAll('.nav-item'),
   tabs: document.querySelectorAll('.tab-content'),
+  appMain: document.querySelector('.app-main'),
   
   // ダッシュボード要素
   dashboardWelcomeStatus: document.getElementById('dashboard-welcome-status'),
@@ -979,6 +980,101 @@ function registerEventListeners() {
   if (elements.customThemeColor) {
     elements.customThemeColor.addEventListener('input', (e) => {
       applyThemeColor(e.target.value);
+    });
+  }
+
+  // 8. プルダウン更新 (Pull-to-refresh) の制御
+  let touchStartY = 0;
+  let touchMoveY = 0;
+  let isPulling = false;
+  const pullThreshold = 75; // 引っ張るしきい値(px)
+  
+  const ptrIndicator = document.getElementById('pull-to-refresh-indicator');
+  
+  if (ptrIndicator && elements.appMain) {
+    const ptrIcon = ptrIndicator.querySelector('.ptr-icon');
+    const ptrText = ptrIndicator.querySelector('.ptr-text');
+    
+    elements.appMain.addEventListener('touchstart', (e) => {
+      // 1点タッチで、メインエリアのスクロール位置が最上部のときのみ検知開始
+      if (elements.appMain.scrollTop === 0 && e.touches.length === 1) {
+        touchStartY = e.touches[0].pageY;
+        isPulling = true;
+      } else {
+        isPulling = false;
+      }
+    }, { passive: true });
+    
+    elements.appMain.addEventListener('touchmove', (e) => {
+      if (!isPulling) return;
+      
+      touchMoveY = e.touches[0].pageY;
+      const dragDistance = touchMoveY - touchStartY;
+      
+      // 下方向への引っ張りのみ処理
+      if (dragDistance > 0) {
+        // インジケーター表示をオン
+        ptrIndicator.classList.add('pulling');
+        
+        // 抵抗（引っ張り感）をつけてメインエリアを下にずらす
+        const translateVal = Math.min(dragDistance * 0.4, 70);
+        elements.appMain.style.transform = `translateY(${translateVal}px)`;
+        elements.appMain.style.transition = 'none';
+        
+        // インジケーター自体の位置と透明度調整
+        ptrIndicator.style.transform = `translateY(${Math.min(dragDistance * 0.35, 22)}px)`;
+        ptrIndicator.style.opacity = Math.min(dragDistance / 80, 1);
+        
+        // アイコンを回転
+        if (ptrIcon) {
+          ptrIcon.style.transform = `rotate(${dragDistance * 3.5}deg)`;
+        }
+        
+        // しきい値を超えたかどうかの表示変更
+        if (dragDistance > pullThreshold) {
+          ptrIndicator.classList.add('ready');
+          if (ptrText) ptrText.textContent = 'はなして更新';
+        } else {
+          ptrIndicator.classList.remove('ready');
+          if (ptrText) ptrText.textContent = 'ひっぱって更新...';
+        }
+        
+        // 標準のバウンス等を制限
+        if (e.cancelable) e.preventDefault();
+      }
+    }, { passive: false });
+    
+    elements.appMain.addEventListener('touchend', () => {
+      if (!isPulling) return;
+      isPulling = false;
+      
+      const dragDistance = touchMoveY - touchStartY;
+      
+      // メインエリアを元の位置に戻す
+      elements.appMain.style.transform = 'translateY(0)';
+      elements.appMain.style.transition = 'transform 0.35s cubic-bezier(0.25, 1, 0.5, 1)';
+      
+      if (dragDistance > pullThreshold) {
+        // 更新実行アニメーション開始
+        ptrIndicator.classList.add('refreshing');
+        if (ptrText) ptrText.textContent = '更新中...';
+        ptrIndicator.style.transform = 'translateY(12px)';
+        ptrIndicator.style.opacity = '1';
+        
+        // 0.7秒後にブラウザをリロード
+        setTimeout(() => {
+          window.location.reload();
+        }, 700);
+      } else {
+        // キャンセル
+        ptrIndicator.classList.remove('pulling', 'ready');
+        ptrIndicator.style.transform = 'translateY(-15px)';
+        ptrIndicator.style.opacity = '0';
+        ptrIndicator.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+      }
+      
+      touchStartY = 0;
+      touchMoveY = 0;
     });
   }
 }
