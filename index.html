@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <!-- モバイルファースト設計のためのビューポート設定 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FlowTodo - スマートなタスク＆時間管理</title>
+  
+  <!-- Google Fonts (Outfit: モダンで親しみやすいサンセリフ体) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS スタイルの読み込み -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- PC表示時用のスマートフォン型フレームコンテナ -->
+  <div class="app-container">
+    
+    <!-- アプリヘッダー -->
+    <header class="app-header">
+      <div class="header-content">
+        <div class="logo-area">
+          <div class="logo-icon">
+            <i data-lucide="compass" class="icon-pulse"></i>
+          </div>
+          <div>
+            <h1>FlowTodo</h1>
+            <p id="current-date">2026年6月7日 日曜日</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="theme-menu-btn" class="header-action-btn" title="テーマカラー変更" style="margin-right: 8px;">
+            <i data-lucide="palette"></i>
+          </button>
+          <button id="add-category-btn" class="header-action-btn" title="カテゴリ管理">
+            <i data-lucide="folder-plus"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- メインコンテンツ表示エリア（タブによって切り替える） -->
+    <main class="app-main">
+      
+      <!-- 1. ダッシュボード（ホーム）タブ -->
+      <section id="tab-dashboard" class="tab-content active-tab">
+        <div class="welcome-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+          <div class="welcome-text" style="flex: 1;">
+            <h2>こんにちは！</h2>
+            <p id="dashboard-welcome-status">現在、やる必要のあるタスクを読み込んでいます...</p>
+          </div>
+          <div class="poodle-container">
+            <svg class="poodle-mascot" viewBox="0 0 100 90" width="80" height="72" xmlns="http://www.w3.org/2000/svg">
+              <!-- Body/Chest peeking -->
+              <path d="M 30,80 C 30,65 70,65 70,80" fill="#d4a373" />
+              <!-- Left Ear (floppy curl) -->
+              <circle cx="28" cy="45" r="14" fill="#c68b59" />
+              <circle cx="24" cy="55" r="10" fill="#c68b59" />
+              <circle cx="32" cy="52" r="10" fill="#c68b59" />
+              <!-- Right Ear (floppy curl) -->
+              <circle cx="72" cy="45" r="14" fill="#c68b59" />
+              <circle cx="76" cy="55" r="10" fill="#c68b59" />
+              <circle cx="68" cy="52" r="10" fill="#c68b59" />
+              <!-- Head base -->
+              <circle cx="50" cy="42" r="22" fill="#d4a373" />
+              <!-- Forehead curls -->
+              <circle cx="50" cy="22" r="8" fill="#d4a373" />
+              <circle cx="43" cy="24" r="7" fill="#d4a373" />
+              <circle cx="57" cy="24" r="7" fill="#d4a373" />
+              <!-- Muzzle/Snout -->
+              <ellipse cx="50" cy="48" rx="10" ry="7" fill="#fcf6f0" />
+              <!-- Eyes -->
+              <circle cx="41" cy="38" r="3" fill="#3d3436" />
+              <circle cx="40" cy="37" r="0.8" fill="#ffffff" /> <!-- Eye shine -->
+              <circle cx="59" cy="38" r="3" fill="#3d3436" />
+              <circle cx="58" cy="37" r="0.8" fill="#ffffff" /> <!-- Eye shine -->
+              <!-- Nose -->
+              <ellipse cx="50" cy="45" rx="3.5" ry="2.2" fill="#1e1a1b" />
+              <!-- Cute mouth (w-shape) -->
+              <path d="M 47,49 Q 48.5,51.5 50,49 Q 51.5,51.5 53,49" fill="none" stroke="#1e1a1b" stroke-width="1.2" stroke-linecap="round" />
+              <!-- Cheeks (Blush) -->
+              <circle cx="34" cy="44" r="3" fill="#ffb3c1" opacity="0.6" />
+              <circle cx="66" cy="44" r="3" fill="#ffb3c1" opacity="0.6" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- クイック統計パネル -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon pending-icon">
+              <i data-lucide="clock"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">未完了</span>
+              <span id="stat-pending-count" class="stat-value">0</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon completed-icon">
+              <i data-lucide="check-circle-2"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">完了済み</span>
+              <span id="stat-completed-count" class="stat-value">0</span>
+            </div>
+          </div>
+          <div class="stat-card full-width-stat">
+            <div class="stat-icon time-icon">
+              <i data-lucide="hourglass"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">予定時間合計 / 完了した時間</span>
+              <span id="stat-time-summary" class="stat-value">0h 0m / 0h 0m</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- やる必要のあるタスク -->
+        <div class="dashboard-section">
+          <div class="section-header">
+            <h3>やる必要のあるタスク</h3>
+            <span id="dashboard-active-badge" class="group-count">0</span>
+          </div>
+          <div id="dashboard-active-list" class="dashboard-list">
+            <!-- 動的にやる必要のある未完了タスクが追加されます -->
+            <p class="empty-state">やる必要のあるタスクはありません。素晴らしい！</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. タスク一覧タブ -->
+      <section id="tab-tasks" class="tab-content">
+        <!-- 検索・フィルターバー -->
+        <div class="filter-bar">
+          <div class="search-box">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" id="task-search-input" placeholder="タスクを検索...">
+            <button id="search-clear-btn" class="clear-btn" style="display: none;">
+              <i data-lucide="x"></i>
+            </button>
+          </div>
+          <div class="filter-options">
+            <div class="select-wrapper">
+              <select id="filter-category-select">
+                <option value="all">すべてのカテゴリ</option>
+              </select>
+            </div>
+            <div class="select-wrapper">
+              <select id="filter-priority-select">
+                <option value="all">すべての優先度</option>
+                <option value="high">優先度: 高</option>
+                <option value="medium">優先度: 中</option>
+                <option value="low">優先度: 低</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- タスクリストコンテナ -->
+        <div class="tasks-container">
+          
+          <!-- 未完了タスクグループ -->
+          <div class="task-group">
+            <h3 class="group-title">
+              <span>未完了のタスク</span>
+              <span id="active-tasks-badge" class="group-count">0</span>
+            </h3>
+            <div id="active-tasks-list" class="task-list">
+              <!-- 動的に未完了タスクが挿入されます -->
+              <p class="empty-state">タスクがありません。右下の「＋」ボタンから追加しましょう！</p>
+            </div>
+          </div>
+
+          <!-- 完了済みタスクグループ -->
+          <div class="task-group completed-group">
+            <button id="toggle-completed-btn" class="group-header-btn">
+              <div class="group-title-left">
+                <i data-lucide="chevron-right" class="toggle-icon"></i>
+                <h3 class="group-title">完了したタスク</h3>
+              </div>
+              <span id="completed-tasks-badge" class="group-count">0</span>
+            </button>
+            <div id="completed-tasks-list" class="task-list collapsed">
+              <!-- 動的に完了済みタスクが挿入されます -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 3. アナリティクスタブ -->
+      <section id="tab-analytics" class="tab-content">
+        <!-- グラフセクション -->
+        <div class="analytics-card">
+          <h3>タスク完了率</h3>
+          <div class="chart-container">
+            <canvas id="completion-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <h3>カテゴリ別の時間配分 (時間)</h3>
+          <div class="chart-container">
+            <canvas id="category-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <h3>カテゴリ別タスク数</h3>
+          <div id="category-list-summary" class="category-summary-list">
+            <!-- カテゴリごとの詳細が動的に追加されます -->
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- 中央のフローティング追加ボタン (+) -->
+    <button id="fab-add-task" class="fab-btn" title="タスクを追加">
+      <i data-lucide="plus"></i>
+    </button>
+
+    <!-- ボトムナビゲーションバー -->
+    <nav class="app-nav">
+      <button class="nav-item active-nav" data-tab="dashboard">
+        <i data-lucide="layout-dashboard"></i>
+        <span>ホーム</span>
+      </button>
+      <button class="nav-item" data-tab="tasks">
+        <i data-lucide="check-square"></i>
+        <span>タスク</span>
+      </button>
+      <!-- 追加ボタンのスペース確保用の空要素 -->
+      <div class="nav-placeholder"></div>
+      <button class="nav-item" data-tab="analytics">
+        <i data-lucide="pie-chart"></i>
+        <span>分析</span>
+      </button>
+    </nav>
+
+    <!-- モーダル: タスク追加/編集ボトムシート -->
+    <div id="task-modal" class="modal-overlay">
+      <div class="modal-sheet">
+        <!-- ドラッグ用ハンドル（スマホ風デザイン） -->
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+          <h2 id="modal-title">タスクを追加</h2>
+          <button class="close-modal-btn" id="task-modal-close">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <form id="task-form" class="modal-body">
+          <input type="hidden" id="task-id">
+          
+          <div class="form-group">
+            <label for="task-title">タスク名 <span class="required">*</span></label>
+            <input type="text" id="task-title" required placeholder="例: レポートの作成">
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="task-category">カテゴリ</label>
+              <div class="select-wrapper">
+                <select id="task-category">
+                  <!-- 動的にカスタムカテゴリが追加されます -->
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="task-priority">優先度</label>
+              <div class="select-wrapper">
+                <select id="task-priority">
+                  <option value="low">低</option>
+                  <option value="medium" selected>中</option>
+                  <option value="high">高</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>見積もり時間</label>
+              <div class="time-input-row">
+                <input type="number" id="task-duration-hours" min="0" max="99" value="0" placeholder="時">
+                <span>時間</span>
+                <input type="number" id="task-duration-minutes" min="0" max="59" value="0" placeholder="分">
+                <span>分</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="task-due-date">期限</label>
+              <input type="datetime-local" id="task-due-date">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="task-notes">メモ書き / 詳細</label>
+            <textarea id="task-notes" rows="4" placeholder="タスクの補足説明、手順など..."></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" id="task-modal-cancel">キャンセル</button>
+            <button type="submit" class="btn btn-primary" id="task-modal-submit">保存する</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- モーダル: カテゴリ管理ボトムシート -->
+    <div id="category-modal" class="modal-overlay">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+          <h2>カテゴリ管理</h2>
+          <button class="close-modal-btn" id="category-modal-close">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- カテゴリ追加フォーム -->
+          <form id="category-form" class="category-add-form">
+            <div class="form-group">
+              <label for="category-name">新規カテゴリ名 <span class="required">*</span></label>
+              <input type="text" id="category-name" required placeholder="例: 勉強">
+            </div>
+            <div class="form-group">
+              <label>テーマカラー</label>
+              <div class="color-presets">
+                <label class="color-preset" style="background-color: #ef4444;"><input type="radio" name="category-color" value="#ef4444" checked></label>
+                <label class="color-preset" style="background-color: #3b82f6;"><input type="radio" name="category-color" value="#3b82f6"></label>
+                <label class="color-preset" style="background-color: #10b981;"><input type="radio" name="category-color" value="#10b981"></label>
+                <label class="color-preset" style="background-color: #f59e0b;"><input type="radio" name="category-color" value="#f59e0b"></label>
+                <label class="color-preset" style="background-color: #8b5cf6;"><input type="radio" name="category-color" value="#8b5cf6"></label>
+                <label class="color-preset" style="background-color: #ec4899;"><input type="radio" name="category-color" value="#ec4899"></label>
+                <label class="color-preset" style="background-color: #06b6d4;"><input type="radio" name="category-color" value="#06b6d4"></label>
+                <label class="color-preset" style="background-color: #6b7280;"><input type="radio" name="category-color" value="#6b7280"></label>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary full-width-btn">カテゴリを追加</button>
+          </form>
+
+          <!-- カテゴリ一覧 -->
+          <div class="category-list-section">
+            <label>作成済みのカテゴリ</label>
+            <div id="custom-category-list" class="custom-category-list">
+              <!-- 動的にカテゴリリストが追加されます -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- モーダル: テーマカラー変更ボトムシート -->
+    <div id="theme-modal" class="modal-overlay">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+          <h2>テーマカラーを変更</h2>
+          <button class="close-modal-btn" id="theme-modal-close">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="theme-section">
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px;">お好きなカラーをえらんでね</label>
+            <div class="theme-presets" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+              <!-- ピーチピンク (デフォルト) -->
+              <button type="button" class="theme-preset-btn" data-color="#ff758c" style="background: linear-gradient(135deg, #ff758c, #ffaa6b); height: 44px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"></button>
+              <!-- ミントグリーン -->
+              <button type="button" class="theme-preset-btn" data-color="#06d6a0" style="background: linear-gradient(135deg, #06d6a0, #74ffd6); height: 44px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"></button>
+              <!-- ラベンダー -->
+              <button type="button" class="theme-preset-btn" data-color="#bda6ff" style="background: linear-gradient(135deg, #bda6ff, #dcc3ff); height: 44px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"></button>
+              <!-- アプリコットイエロー -->
+              <button type="button" class="theme-preset-btn" data-color="#ff9e00" style="background: linear-gradient(135deg, #ff9e00, #ffe066); height: 44px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"></button>
+              <!-- ストロベリーレッド -->
+              <button type="button" class="theme-preset-btn" data-color="#ff4d6d" style="background: linear-gradient(135deg, #ff4d6d, #ff758c); height: 44px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"></button>
+              <!-- ソーダブルー -->
+              <button type="button" class="theme-preset-btn" data-color="#70d6ff" style="background: linear-gradient(135deg, #70d6ff, #a2d2ff); height: 44px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"></button>
+              <!-- ココアローズ -->
+              <button type="button" class="theme-preset-btn" data-color="#b5838d" style="background: linear-gradient(135deg, #b5838d, #ffb5a7); height: 44px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"></button>
+              <!-- フレッシュライム -->
+              <button type="button" class="theme-preset-btn" data-color="#83c5be" style="background: linear-gradient(135deg, #83c5be, #95d5b2); height: 44px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"></button>
+            </div>
+          </div>
+          <div class="theme-section">
+            <label for="custom-theme-color" style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px;">カスタムカラー (自由に入力してね)</label>
+            <div class="color-picker-row" style="display: flex; align-items: center; gap: 12px; background: #fdfafb; border: 1.5px solid rgba(255, 117, 140, 0.15); padding: 8px 16px; border-radius: 18px;">
+              <input type="color" id="custom-theme-color" value="#ff758c" style="border: none; background: none; width: 44px; height: 34px; cursor: pointer;">
+              <span id="custom-theme-val" style="font-size: 13px; font-weight: 700; color: var(--text-muted);">#FF758C</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 外部スクリプトの読み込み -->
+  <!-- Chart.js (グラフ描画ライブラリ) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons (モダンなアイコンライブラリ) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- アプリケーションスクリプト -->
+  <script src="app.js"></script>
+</body>
+</html>
